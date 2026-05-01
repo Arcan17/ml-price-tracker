@@ -7,7 +7,9 @@ from services.mercadolibre import (
 )
 
 
-def _make_page(*, title="", prices=None, items=None, url="https://example.com", status=200):
+def _make_page(
+    *, title="", prices=None, items=None, url="https://example.com", status=200
+):
     """Build a MagicMock page where sync methods are MagicMock and async are AsyncMock."""
     page = MagicMock()
     page.goto = AsyncMock(return_value=MagicMock(status=status))
@@ -34,6 +36,7 @@ def _browser_context(page):
 
 
 # ── search_products ───────────────────────────────────────────────────────────
+
 
 async def test_search_products_returns_results():
     from services.mercadolibre import search_products
@@ -64,7 +67,10 @@ async def test_search_products_returns_results():
     page = _make_page(items=[item_mock, item_mock])
     browser, context = _browser_context(page)
 
-    with patch("services.mercadolibre._make_context", new=AsyncMock(return_value=(browser, context))):
+    with patch(
+        "services.mercadolibre._make_context",
+        new=AsyncMock(return_value=(browser, context)),
+    ):
         results = await search_products("iphone 15")
 
     assert isinstance(results, list)
@@ -78,13 +84,17 @@ async def test_search_products_empty_results():
     page = _make_page(items=[])
     browser, context = _browser_context(page)
 
-    with patch("services.mercadolibre._make_context", new=AsyncMock(return_value=(browser, context))):
+    with patch(
+        "services.mercadolibre._make_context",
+        new=AsyncMock(return_value=(browser, context)),
+    ):
         results = await search_products("xyzzy_no_existe")
 
     assert results == []
 
 
 # ── get_item ──────────────────────────────────────────────────────────────────
+
 
 async def test_get_item_returns_item():
     from services.mercadolibre import get_item
@@ -96,7 +106,10 @@ async def test_get_item_returns_item():
     )
     browser, context = _browser_context(page)
 
-    with patch("services.mercadolibre._make_context", new=AsyncMock(return_value=(browser, context))):
+    with patch(
+        "services.mercadolibre._make_context",
+        new=AsyncMock(return_value=(browser, context)),
+    ):
         item = await get_item("MLC1234567890")
 
     assert item is not None
@@ -110,13 +123,17 @@ async def test_get_item_returns_none_on_404():
     page = _make_page(status=404)
     browser, context = _browser_context(page)
 
-    with patch("services.mercadolibre._make_context", new=AsyncMock(return_value=(browser, context))):
+    with patch(
+        "services.mercadolibre._make_context",
+        new=AsyncMock(return_value=(browser, context)),
+    ):
         item = await get_item("MLCNONEXISTENT")
 
     assert item is None
 
 
 # ── extract_item_id ───────────────────────────────────────────────────────────
+
 
 def test_extract_item_id_from_raw_id():
     assert extract_item_id("MLC1234567890") == "MLC1234567890"
@@ -140,6 +157,7 @@ def test_extract_item_id_invalid_returns_none():
 
 # ── parse_price ───────────────────────────────────────────────────────────────
 
+
 def test_parse_price_plain_number():
     assert parse_price("850000") == 850_000.0
 
@@ -162,6 +180,7 @@ def test_parse_price_invalid_returns_none():
 
 
 # ── format_price ──────────────────────────────────────────────────────────────
+
 
 def test_format_price_standard():
     assert format_price(749_990) == "$749.990"

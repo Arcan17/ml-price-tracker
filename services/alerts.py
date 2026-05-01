@@ -58,7 +58,9 @@ async def _check_single_alert(alert: Alert, db: Session, bot: Bot) -> None:
     if current_price <= alert.target_price:
         logger.info(
             "Alert %d triggered: %.0f <= %.0f",
-            alert.id, current_price, alert.target_price,
+            alert.id,
+            current_price,
+            alert.target_price,
         )
         alert.is_active = False
         alert.triggered_at = datetime.utcnow()

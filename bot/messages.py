@@ -22,12 +22,12 @@ HELP = (
     "   Muestra este mensaje"
 )
 
-SEARCH_HEADER = "🔍 <b>Resultados para \"{query}\":</b>\n\n"
+SEARCH_HEADER = '🔍 <b>Resultados para "{query}":</b>\n\n'
 
 SEARCH_ITEM_INLINE = (
     "{num}. <b>{title}</b>\n"
     "   💰 {price}\n"
-    "   🔗 <a href=\"{url}\">Ver en MercadoLibre</a>\n\n"
+    '   🔗 <a href="{url}">Ver en MercadoLibre</a>\n\n'
 )
 
 # Legacy format kept for /seguir command compatibility
@@ -35,14 +35,20 @@ SEARCH_ITEM = (
     "{num}. <b>{title}</b>\n"
     "   💰 {price}\n"
     "   🆔 <code>{item_id}</code>\n"
-    "   🔗 <a href=\"{url}\">Ver en MercadoLibre</a>\n\n"
+    '   🔗 <a href="{url}">Ver en MercadoLibre</a>\n\n'
 )
 
-SEARCH_FOOTER = "💡 Para crear una alerta:\n<code>/seguir {item_id} {precio_objetivo}</code>"
+SEARCH_FOOTER = (
+    "💡 Para crear una alerta:\n<code>/seguir {item_id} {precio_objetivo}</code>"
+)
 
-SEARCH_NO_RESULTS = "😕 No encontré productos para <b>\"{query}\"</b>. Intenta con otros términos."
+SEARCH_NO_RESULTS = (
+    '😕 No encontré productos para <b>"{query}"</b>. Intenta con otros términos.'
+)
 
-SEARCH_NO_ARGS = "❌ Debes indicar qué buscar.\n<i>Ejemplo: /buscar samsung galaxy s24</i>"
+SEARCH_NO_ARGS = (
+    "❌ Debes indicar qué buscar.\n<i>Ejemplo: /buscar samsung galaxy s24</i>"
+)
 
 SEARCH_ERROR = "⚠️ Hubo un error al buscar. Intenta nuevamente en unos minutos."
 
@@ -77,8 +83,7 @@ SEGUIR_INVALID_PRICE = (
 )
 
 SEGUIR_ITEM_NOT_FOUND = (
-    "❌ No encontré ese producto en MercadoLibre. "
-    "Puede que ya no esté disponible."
+    "❌ No encontré ese producto en MercadoLibre. " "Puede que ya no esté disponible."
 )
 
 SEGUIR_ALREADY_EXISTS = (
@@ -102,7 +107,7 @@ SEGUIR_CREATED_BELOW = (
     "💰 Precio actual: {current_price}\n"
     "🎯 Tu precio objetivo era: {target_price}\n\n"
     "<b>¡El precio ya está por debajo de tu objetivo!</b> 🎉\n"
-    "🛒 <a href=\"{url}\">Ver en MercadoLibre</a>"
+    '🛒 <a href="{url}">Ver en MercadoLibre</a>'
 )
 
 SEGUIR_ERROR = "⚠️ Hubo un error al crear la alerta. Intenta nuevamente."
@@ -113,7 +118,7 @@ ALERT_ITEM = (
     "{num}. <b>{name}</b>\n"
     "   🎯 Objetivo: {target_price}\n"
     "   💰 Precio actual: {current_price}\n"
-    "   🔗 <a href=\"{url}\">Ver producto</a>\n\n"
+    '   🔗 <a href="{url}">Ver producto</a>\n\n'
 )
 
 ALERTS_EMPTY = (
@@ -123,9 +128,13 @@ ALERTS_EMPTY = (
 
 BORRAR_NO_ARGS = "❌ Indica el ID de la alerta.\n<i>Ejemplo: /borrar 3</i>"
 
-BORRAR_INVALID_ID = "❌ El ID debe ser un número. Usa /mis_alertas para ver tus alertas."
+BORRAR_INVALID_ID = (
+    "❌ El ID debe ser un número. Usa /mis_alertas para ver tus alertas."
+)
 
-BORRAR_NOT_FOUND = "❌ No encontré la alerta #{id}. Usa /mis_alertas para ver tus alertas."
+BORRAR_NOT_FOUND = (
+    "❌ No encontré la alerta #{id}. Usa /mis_alertas para ver tus alertas."
+)
 
 BORRAR_SUCCESS = "✅ Alerta #{id} eliminada correctamente."
 
@@ -136,7 +145,7 @@ ALERT_TRIGGERED = (
     "📦 {name}\n"
     "💰 Precio actual: {current_price}\n"
     "✅ Tu objetivo era: {target_price}\n\n"
-    "🛒 <a href=\"{url}\">Ver en MercadoLibre</a>"
+    '🛒 <a href="{url}">Ver en MercadoLibre</a>'
 )
 
 ALERT_PRODUCT_REMOVED = (

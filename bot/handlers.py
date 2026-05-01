@@ -16,13 +16,18 @@ from bot import messages
 from models.database import Alert, SessionLocal, User
 from services.alerts import check_all_alerts
 from services.mercadolibre import (
-    extract_item_id, format_price, get_item, parse_price, search_products,
+    extract_item_id,
+    format_price,
+    get_item,
+    parse_price,
+    search_products,
 )
 
 logger = logging.getLogger(__name__)
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def _get_or_create_user(db, telegram_user) -> User:
     user = db.query(User).filter(User.telegram_id == telegram_user.id).first()
@@ -34,7 +39,9 @@ def _get_or_create_user(db, telegram_user) -> User:
     return user
 
 
-async def _do_search(query: str, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def _do_search(
+    query: str, update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     await update.message.reply_text(
         messages.SEARCHING.format(query=query), parse_mode=ParseMode.HTML
     )
@@ -42,7 +49,9 @@ async def _do_search(query: str, update: Update, context: ContextTypes.DEFAULT_T
         results = await search_products(query, limit=5)
     except Exception:
         logger.exception("Error searching ML for %r", query)
-        await update.message.reply_text(messages.SEARCH_ERROR, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.SEARCH_ERROR, parse_mode=ParseMode.HTML
+        )
         return
 
     if not results:
@@ -63,7 +72,9 @@ async def _do_search(query: str, update: Update, context: ContextTypes.DEFAULT_T
             price=format_price(item.get("price", 0)),
             url=item.get("permalink", ""),
         )
-        label = f"📌 {item.get('title', '')[:30]}… • {format_price(item.get('price', 0))}"
+        label = (
+            f"📌 {item.get('title', '')[:30]}… • {format_price(item.get('price', 0))}"
+        )
         keyboard.append([InlineKeyboardButton(label, callback_data=f"seguir:{i}")])
 
     await update.message.reply_text(
@@ -75,6 +86,7 @@ async def _do_search(query: str, update: Update, context: ContextTypes.DEFAULT_T
 
 
 # ── Command handlers ──────────────────────────────────────────────────────────
+
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     name = update.effective_user.first_name or "amigo"
@@ -89,30 +101,40 @@ async def ayuda_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 async def buscar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text(messages.SEARCH_NO_ARGS, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.SEARCH_NO_ARGS, parse_mode=ParseMode.HTML
+        )
         return
     await _do_search(" ".join(context.args), update, context)
 
 
 async def seguir_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args or len(context.args) < 2:
-        await update.message.reply_text(messages.SEGUIR_NO_ARGS, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.SEGUIR_NO_ARGS, parse_mode=ParseMode.HTML
+        )
         return
 
     item_id = extract_item_id(context.args[0])
     if not item_id:
-        await update.message.reply_text(messages.SEGUIR_INVALID_ID, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.SEGUIR_INVALID_ID, parse_mode=ParseMode.HTML
+        )
         return
 
     target_price = parse_price(context.args[1])
     if target_price is None:
-        await update.message.reply_text(messages.SEGUIR_INVALID_PRICE, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.SEGUIR_INVALID_PRICE, parse_mode=ParseMode.HTML
+        )
         return
 
     await _create_alert(item_id, target_price, update, context)
 
 
-async def mis_alertas_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def mis_alertas_command(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     db = SessionLocal()
     try:
         user = _get_or_create_user(db, update.effective_user)
@@ -124,7 +146,9 @@ async def mis_alertas_command(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
 
         if not alerts:
-            await update.message.reply_text(messages.ALERTS_EMPTY, parse_mode=ParseMode.HTML)
+            await update.message.reply_text(
+                messages.ALERTS_EMPTY, parse_mode=ParseMode.HTML
+            )
             return
 
         text = messages.ALERTS_HEADER.format(count=len(alerts))
@@ -137,12 +161,14 @@ async def mis_alertas_command(update: Update, context: ContextTypes.DEFAULT_TYPE
                 current_price=format_price(alert.current_price or 0),
                 url=alert.item_url,
             )
-            keyboard.append([
-                InlineKeyboardButton(
-                    f"🗑 Eliminar #{i}: {alert.item_name[:25]}…",
-                    callback_data=f"borrar:{alert.id}",
-                )
-            ])
+            keyboard.append(
+                [
+                    InlineKeyboardButton(
+                        f"🗑 Eliminar #{i}: {alert.item_name[:25]}…",
+                        callback_data=f"borrar:{alert.id}",
+                    )
+                ]
+            )
 
         await update.message.reply_text(
             text,
@@ -156,17 +182,22 @@ async def mis_alertas_command(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 async def borrar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.message.reply_text(messages.BORRAR_NO_ARGS, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.BORRAR_NO_ARGS, parse_mode=ParseMode.HTML
+        )
         return
     try:
         alert_id = int(context.args[0])
     except ValueError:
-        await update.message.reply_text(messages.BORRAR_INVALID_ID, parse_mode=ParseMode.HTML)
+        await update.message.reply_text(
+            messages.BORRAR_INVALID_ID, parse_mode=ParseMode.HTML
+        )
         return
     await _delete_alert(alert_id, update, context)
 
 
 # ── Text message handler (free-text search + price reply) ────────────────────
+
 
 async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = update.message.text.strip()
@@ -181,7 +212,9 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
             )
             return
         context.user_data.pop("pending_follow")
-        await _create_alert(pending["item_id"], target_price, update, context, item_hint=pending)
+        await _create_alert(
+            pending["item_id"], target_price, update, context, item_hint=pending
+        )
         return
 
     # Otherwise treat message as a search query
@@ -189,6 +222,7 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 # ── Callback query handlers ───────────────────────────────────────────────────
+
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -199,7 +233,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         idx = int(data.split(":")[1])
         results = context.user_data.get("search_results", [])
         if idx >= len(results):
-            await query.message.reply_text("⚠️ Resultado no disponible, realiza una nueva búsqueda.")
+            await query.message.reply_text(
+                "⚠️ Resultado no disponible, realiza una nueva búsqueda."
+            )
             return
         item = results[idx]
         context.user_data["pending_follow"] = {
@@ -222,6 +258,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 
 # ── Shared logic ──────────────────────────────────────────────────────────────
+
 
 async def _create_alert(
     item_id: str,
@@ -250,7 +287,9 @@ async def _create_alert(
                 "permalink": item_hint["url"],
             }
         else:
-            await msg.reply_text(messages.SEGUIR_ITEM_NOT_FOUND, parse_mode=ParseMode.HTML)
+            await msg.reply_text(
+                messages.SEGUIR_ITEM_NOT_FOUND, parse_mode=ParseMode.HTML
+            )
             return
 
     current_price: float = item.get("price", 0)
@@ -262,7 +301,11 @@ async def _create_alert(
         user = _get_or_create_user(db, update.effective_user)
         existing = (
             db.query(Alert)
-            .filter(Alert.user_id == user.id, Alert.item_id == item_id, Alert.is_active == True)  # noqa: E712
+            .filter(
+                Alert.user_id == user.id,
+                Alert.item_id == item_id,
+                Alert.is_active == True,
+            )  # noqa: E712
             .first()
         )
         if existing:
@@ -347,12 +390,15 @@ async def _check_prices_job(context: ContextTypes.DEFAULT_TYPE) -> None:
 
 # ── Application factory ───────────────────────────────────────────────────────
 
+
 async def _post_init(application: Application) -> None:
-    await application.bot.set_my_commands([
-        BotCommand("buscar", "Buscar un producto en MercadoLibre"),
-        BotCommand("mis_alertas", "Ver tus alertas activas"),
-        BotCommand("ayuda", "Ver todos los comandos"),
-    ])
+    await application.bot.set_my_commands(
+        [
+            BotCommand("buscar", "Buscar un producto en MercadoLibre"),
+            BotCommand("mis_alertas", "Ver tus alertas activas"),
+            BotCommand("ayuda", "Ver todos los comandos"),
+        ]
+    )
 
 
 def build_application(token: str) -> Application:
@@ -365,7 +411,9 @@ def build_application(token: str) -> Application:
     application.add_handler(CommandHandler("borrar", borrar_command))
     application.add_handler(CommandHandler("ayuda", ayuda_command))
     application.add_handler(CallbackQueryHandler(callback_handler))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_handler))
+    application.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, text_handler)
+    )
 
     application.job_queue.run_repeating(_check_prices_job, interval=1800, first=60)
 

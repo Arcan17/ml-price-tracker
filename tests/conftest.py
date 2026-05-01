@@ -21,7 +21,9 @@ def _clean_test_db():
 
 @pytest.fixture
 def test_engine(_clean_test_db):
-    _engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+    _engine = create_engine(
+        TEST_DATABASE_URL, connect_args={"check_same_thread": False}
+    )
     Base.metadata.create_all(_engine)
     yield _engine
     _engine.dispose()

@@ -19,10 +19,13 @@ ITEM_BELOW_TARGET = {
 
 # ── Price drops → alert fires ─────────────────────────────────────────────────
 
+
 async def test_alert_triggered_when_price_drops(
     db_session, db_session_factory, sample_alert
 ):
-    with patch("services.alerts.get_item", new=AsyncMock(return_value=ITEM_BELOW_TARGET)):
+    with patch(
+        "services.alerts.get_item", new=AsyncMock(return_value=ITEM_BELOW_TARGET)
+    ):
         mock_bot = AsyncMock()
         await check_all_alerts(mock_bot, session_factory=db_session_factory)
 
@@ -39,10 +42,13 @@ async def test_alert_triggered_when_price_drops(
 
 # ── Price still above → no notification ──────────────────────────────────────
 
+
 async def test_alert_not_triggered_when_price_above(
     db_session, db_session_factory, sample_alert
 ):
-    with patch("services.alerts.get_item", new=AsyncMock(return_value=ITEM_ABOVE_TARGET)):
+    with patch(
+        "services.alerts.get_item", new=AsyncMock(return_value=ITEM_ABOVE_TARGET)
+    ):
         mock_bot = AsyncMock()
         await check_all_alerts(mock_bot, session_factory=db_session_factory)
 
@@ -54,6 +60,7 @@ async def test_alert_not_triggered_when_price_above(
 
 
 # ── Product removed from ML ───────────────────────────────────────────────────
+
 
 async def test_alert_deactivated_when_product_removed(
     db_session, db_session_factory, sample_alert
@@ -71,6 +78,7 @@ async def test_alert_deactivated_when_product_removed(
 
 # ── No alerts → nothing happens ───────────────────────────────────────────────
 
+
 async def test_no_alerts_does_nothing(db_session_factory):
     mock_bot = AsyncMock()
     await check_all_alerts(mock_bot, session_factory=db_session_factory)
@@ -78,6 +86,7 @@ async def test_no_alerts_does_nothing(db_session_factory):
 
 
 # ── Inactive alerts are skipped ───────────────────────────────────────────────
+
 
 async def test_inactive_alerts_are_skipped(
     db_session, db_session_factory, sample_alert
@@ -91,6 +100,7 @@ async def test_inactive_alerts_are_skipped(
 
 
 # ── At-target price also triggers ────────────────────────────────────────────
+
 
 async def test_alert_triggers_at_exact_target_price(
     db_session, db_session_factory, sample_alert

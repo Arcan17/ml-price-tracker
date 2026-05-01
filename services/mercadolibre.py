@@ -15,7 +15,10 @@ _COOKIE_TTL = 1800
 
 def _get_pw_cookies() -> list[dict]:
     now = time.time()
-    if _cookie_cache["cookies"] is not None and now - _cookie_cache["fetched_at"] < _COOKIE_TTL:
+    if (
+        _cookie_cache["cookies"] is not None
+        and now - _cookie_cache["fetched_at"] < _COOKIE_TTL
+    ):
         return _cookie_cache["cookies"]
     try:
         from pycookiecheat import chrome_cookies
@@ -77,18 +80,23 @@ async def search_products(query: str, limit: int = 5) -> list[dict]:
             for item in items[:limit]:
                 try:
                     title = (
-                        await item.locator(".poly-component__title").text_content(timeout=3000)
+                        await item.locator(".poly-component__title").text_content(
+                            timeout=3000
+                        )
                         or ""
                     )
                     price_str = (
-                        await item.locator(".andes-money-amount__fraction")
-                        .first.text_content(timeout=2000)
+                        await item.locator(
+                            ".andes-money-amount__fraction"
+                        ).first.text_content(timeout=2000)
                         or "0"
                     )
                     price_clean = re.sub(r"[^\d]", "", price_str)
                     price_val = float(price_clean) if price_clean else 0.0
                     link = (
-                        await item.locator("a").first.get_attribute("href", timeout=2000)
+                        await item.locator("a").first.get_attribute(
+                            "href", timeout=2000
+                        )
                         or ""
                     )
                     link_clean = link.split("#")[0].split("?")[0]
@@ -127,7 +135,9 @@ async def get_item(item_id: str) -> Optional[dict]:
                 return None
             await page.wait_for_timeout(3000)
             title = (await page.locator("h1").first.text_content(timeout=5000)) or ""
-            prices = await page.locator(".andes-money-amount__fraction").all_text_contents()
+            prices = await page.locator(
+                ".andes-money-amount__fraction"
+            ).all_text_contents()
             if not prices:
                 return None
             price_clean = re.sub(r"[^\d]", "", prices[0])
