@@ -5,8 +5,23 @@
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat&logo=docker&logoColor=white)
 ![CI](https://img.shields.io/github/actions/workflow/status/Arcan17/ml-price-tracker/ci.yml?label=CI&logo=github)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-A Telegram bot that monitors product prices on **MercadoLibre Chile** and notifies you when the price drops to your target. Built with Python, async/await, and the official MercadoLibre public API (no API key required).
+> **Never miss a price drop on MercadoLibre again.**
+
+A Telegram bot that monitors product prices on **MercadoLibre Chile** and sends you an instant notification the moment the price drops to your target. Built with Python, async/await, and the official MercadoLibre public API — **no API key required** to start tracking.
+
+**The problem it solves:** Manually checking product prices every day is tedious and easy to forget. ML Price Tracker does it automatically every 30 minutes and messages you only when it matters.
+
+---
+
+## Screenshots
+
+| Searching products | Active alerts | Price drop notification |
+|---|---|---|
+| *(add Telegram screenshot)* | *(add Telegram screenshot)* | *(add Telegram screenshot)* |
+
+> **To add screenshots:** Start the bot locally, interact with it on Telegram, take screenshots, save them to `docs/screenshots/`, and replace the placeholder text above.
 
 ---
 
@@ -225,6 +240,17 @@ Alert
 |---|---|---|
 | `TELEGRAM_BOT_TOKEN` | Your bot token from @BotFather | — |
 | `DATABASE_URL` | SQLAlchemy connection string | `sqlite:///./data/bot.db` |
+
+---
+
+## Roadmap
+
+- [ ] Support MercadoLibre Argentina and Mexico (MLA, MLM)
+- [ ] `/historial {id}` command to show price history chart
+- [ ] Web dashboard to manage alerts from browser
+- [ ] Deploy public instance (Railway + persistent DB)
+- [ ] Price drop percentage alerts (e.g. "alert me when it drops 15%")
+- [ ] Multi-language support (English)
 
 ---
 
