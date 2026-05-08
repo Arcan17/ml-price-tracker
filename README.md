@@ -49,6 +49,14 @@ User                    Bot                   MercadoLibre API
 /ayuda          — Show all commands with examples
 ```
 
+## Screenshots
+
+| Search results | Price alert setup | Alert created |
+|---|---|---|
+| ![Search](docs/screenshots/search_results.jpg) | ![Search 2](docs/screenshots/search_results_2.jpg) | ![Alert](docs/screenshots/alert_created.jpg) |
+
+---
+
 ### Demo
 
 ```
