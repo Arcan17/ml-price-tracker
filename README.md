@@ -15,16 +15,6 @@ A Telegram bot that monitors product prices on **MercadoLibre Chile** and sends 
 
 ---
 
-## Screenshots
-
-| Searching products | Active alerts | Price drop notification |
-|---|---|---|
-| *(add Telegram screenshot)* | *(add Telegram screenshot)* | *(add Telegram screenshot)* |
-
-> **To add screenshots:** Start the bot locally, interact with it on Telegram, take screenshots, save them to `docs/screenshots/`, and replace the placeholder text above.
-
----
-
 ## How It Works
 
 ```
