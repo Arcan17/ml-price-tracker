@@ -15,6 +15,20 @@ A Telegram bot that monitors product prices on **MercadoLibre Chile** and sends 
 
 ---
 
+## Client Use Case
+
+This project is useful for clients who need to:
+- **Automate price monitoring** from any e-commerce API or website
+- **Send Telegram alerts** when a condition is met (price drop, stock change, etc.)
+- **Track products over time** with historical data stored in a database
+- **Build bots with commands** that non-technical users can operate from their phone
+- **Schedule background jobs** that run automatically every N minutes
+- **Export tracked data to CSV** for reporting or further analysis
+
+> The same architecture applies to: real estate listings, flight prices, competitor pricing, stock alerts, job postings, or any repeating data monitoring task.
+
+---
+
 ## How It Works
 
 ```
