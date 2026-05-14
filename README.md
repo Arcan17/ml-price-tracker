@@ -7,6 +7,7 @@
 ![Tests](https://img.shields.io/badge/tests-17%20passing-brightgreen?style=flat)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat&logo=docker&logoColor=white)
 ![CI](https://img.shields.io/github/actions/workflow/status/Arcan17/ml-price-tracker/ci.yml?label=CI&logo=github)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/Arcan17/ml-price-tracker)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat)
 
 ---
@@ -186,6 +187,19 @@ Alert
 
 ## Quickstart
 
+### Railway (one-click deploy)
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/Arcan17/ml-price-tracker)
+
+Set these environment variables in the Railway dashboard after deploying:
+
+| Variable | Description |
+|---|---|
+| `TELEGRAM_BOT_TOKEN` | From [@BotFather](https://t.me/BotFather) |
+| `ML_APP_ID` | MercadoLibre app ID ([register free](https://developers.mercadolibre.cl/es_ar/registra-tu-aplicacion)) |
+| `ML_SECRET_KEY` | MercadoLibre secret key |
+| `DATABASE_URL` | Auto-set by Railway if you add a Postgres plugin; defaults to SQLite |
+
 ### Docker (recommended)
 
 ```bash
@@ -306,7 +320,7 @@ The scheduler lives inside the bot process, so alerts are user-specific (stored 
 
 ## Roadmap
 
-- [ ] Deploy public instance (Railway + persistent volume)
+- [x] Railway deploy config (`railway.toml` + one-click button)
 - [ ] `/historial {id}` — price history chart for a tracked product
 - [ ] Price drop percentage alerts (e.g. "alert me when it drops 15%")
 - [ ] Support MercadoLibre Argentina (`MLA`) and Mexico (`MLM`)
