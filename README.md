@@ -1,31 +1,48 @@
-# ML Price Tracker 🤖
+# ML Price Tracker
+
+**Telegram bot that monitors MercadoLibre Chile product prices and alerts you when they drop to your target.**
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?style=flat&logo=telegram&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-17%20passing-brightgreen?style=flat)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat&logo=docker&logoColor=white)
 ![CI](https://img.shields.io/github/actions/workflow/status/Arcan17/ml-price-tracker/ci.yml?label=CI&logo=github)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat)
-![Status](https://img.shields.io/badge/status-active-brightgreen)
-
-> **Never miss a price drop on MercadoLibre again.**
-
-A Telegram bot that monitors product prices on **MercadoLibre Chile** and sends you an instant notification the moment the price drops to your target. Built with Python, async/await, and the official MercadoLibre public API — **no API key required** to start tracking.
-
-**The problem it solves:** Manually checking product prices every day is tedious and easy to forget. ML Price Tracker does it automatically every 30 minutes and messages you only when it matters.
 
 ---
 
-## Client Use Case
+## The Problem
 
-This project is useful for clients who need to:
-- **Automate price monitoring** from any e-commerce API or website
-- **Send Telegram alerts** when a condition is met (price drop, stock change, etc.)
-- **Track products over time** with historical data stored in a database
-- **Build bots with commands** that non-technical users can operate from their phone
-- **Schedule background jobs** that run automatically every N minutes
-- **Export tracked data to CSV** for reporting or further analysis
+If you want to buy something on MercadoLibre — a phone, laptop, appliance — the price fluctuates daily. The only way to catch a good deal is to check manually, which means remembering to do it, opening the site, finding the product, and comparing.
 
-> The same architecture applies to: real estate listings, flight prices, competitor pricing, stock alerts, job postings, or any repeating data monitoring task.
+Most people either pay full price or miss the sale entirely.
+
+## The Solution
+
+Send a Telegram message with the product and your target price. The bot checks the price every 30 minutes and messages you the instant it drops below your goal. No app, no signup, no API key required.
+
+---
+
+## Screenshots
+
+| Search results | Alert setup | Price drop notification |
+|---|---|---|
+| ![Search](docs/screenshots/search_results.jpg) | ![Setup](docs/screenshots/search_results_2.jpg) | ![Alert](docs/screenshots/alert_created.jpg) |
+
+---
+
+## Features
+
+- **Product search** — search MercadoLibre Chile by keyword, get top results with prices and links
+- **Price alerts** — set a target price per product; bot tracks it every 30 minutes
+- **Instant notifications** — Telegram message the moment price drops to or below target
+- **Concurrent users** — async job scheduling handles multiple users simultaneously
+- **Alert management** — list active alerts, delete by ID
+- **Persistent storage** — SQLite database survives restarts
+- **No MercadoLibre account required** — uses the public API (no auth, no scraping)
+- **No API key required** — just a free Telegram bot token
+- **17 passing tests** — all HTTP calls mocked; runs without credentials
+- **Docker ready** — one command deploy
 
 ---
 
@@ -33,21 +50,21 @@ This project is useful for clients who need to:
 
 ```
 User                    Bot                   MercadoLibre API
- |                       |                          |
- |-- /buscar iphone 15 ->|                          |
- |                       |-- GET /sites/MLC/search->|
- |                       |<-- 5 results ------------|
- |<-- numbered list -----|                          |
- |                       |                          |
- |-- /seguir MLC123 850000 ->                       |
- |                       |-- GET /items/MLC123 ---->|
- |                       |<-- price: $900.000 ------|
- |<-- "Te aviso cuando baje de $850.000" ---------- |
- |                       |                          |
- |          [ every 30 min ]                        |
- |                       |-- GET /items/MLC123 ---->|
- |                       |<-- price: $820.000 ------|
- |<-- "🔔 ¡Bajó el precio! $820.000" ------------- |
+ │                       │                          │
+ │─ /buscar iphone 15 ──▶│                          │
+ │                       │─ GET /sites/MLC/search ─▶│
+ │                       │◀─ 5 results ─────────────│
+ │◀─ numbered list ──────│                          │
+ │                       │                          │
+ │─ /seguir MLC123 850000▶│                          │
+ │                       │─ GET /items/MLC123 ──────▶│
+ │                       │◀─ price: $900.000 ────────│
+ │◀─ "Te aviso cuando baje de $850.000" ────────────│
+ │                       │                          │
+ │            [ every 30 min — APScheduler ]        │
+ │                       │─ GET /items/MLC123 ──────▶│
+ │                       │◀─ price: $820.000 ────────│
+ │◀─ "🔔 ¡Bajó el precio! $820.000" ───────────────│
 ```
 
 ---
@@ -55,23 +72,17 @@ User                    Bot                   MercadoLibre API
 ## Bot Commands
 
 ```
-/start          — Welcome message and quick intro
-/buscar {query} — Search products on MercadoLibre Chile
-/seguir {id or url} {price} — Create a price alert
-/mis_alertas    — List your active alerts
-/borrar {id}    — Delete an alert
-/ayuda          — Show all commands with examples
+/start              Welcome message and quick intro
+/buscar {query}     Search products on MercadoLibre Chile
+/seguir {id} {price}  Create a price alert for a product
+/mis_alertas        List your active alerts
+/borrar {id}        Delete an alert by ID
+/ayuda              Show all commands with examples
 ```
-
-## Screenshots
-
-| Search results | Price alert setup | Alert created |
-|---|---|---|
-| ![Search](docs/screenshots/search_results.jpg) | ![Search 2](docs/screenshots/search_results_2.jpg) | ![Alert](docs/screenshots/alert_created.jpg) |
 
 ---
 
-### Demo
+## Demo Conversation
 
 ```
 You: /buscar iphone 15
@@ -87,7 +98,6 @@ Bot: 🔍 Resultados para "iphone 15":
         💰 $1.099.990
         🆔 MLC9876543210
         🔗 Ver en MercadoLibre
-     ...
 
 You: /seguir MLC1234567890 700000
 
@@ -108,117 +118,45 @@ Bot: 🔔 ¡Bajó el precio!
 
 ---
 
+## Architecture
+
+```
+Telegram
+  │  incoming messages
+  ▼
+[bot/handlers.py]           Command handlers (/buscar, /seguir, /mis_alertas, /borrar)
+  │
+  ├──▶ [services/mercadolibre.py]   httpx async client → MercadoLibre public API
+  │       search() → list of items
+  │       get_item() → current price
+  │
+  └──▶ [models/database.py]         SQLAlchemy 2.0 — User + Alert tables (SQLite)
+
+[APScheduler — every 30 min]
+  └──▶ [services/alerts.py]
+         for each active alert:
+           current_price = get_item(item_id)
+           if current_price ≤ target_price:
+             send Telegram notification
+             mark alert as triggered
+
+[api/main.py]               FastAPI — GET /health (for Docker healthcheck)
+```
+
+---
+
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Bot framework | python-telegram-bot v20 (async) |
-| HTTP client | httpx (async) |
-| Database | SQLite via SQLAlchemy 2.0 |
-| Scheduler | PTB built-in JobQueue (APScheduler) |
-| Health check | FastAPI |
-| Testing | pytest + respx (HTTP mocks) |
-| Containerization | Docker + Docker Compose |
-| CI/CD | GitHub Actions |
-
----
-
-## Getting Started
-
-### Option 1: Docker (recommended)
-
-**Prerequisites:** Docker, Docker Compose, and a Telegram bot token.
-
-```bash
-git clone https://github.com/Arcan17/ml-price-tracker.git
-cd ml-price-tracker
-
-# Create your .env file
-cp .env.example .env
-# Edit .env and set TELEGRAM_BOT_TOKEN=your_token_here
-
-docker-compose up --build
-```
-
-The bot starts immediately and the health check is at `http://localhost:8080/health`.
-
-### Option 2: Local Development
-
-**Prerequisites:** Python 3.11+
-
-```bash
-git clone https://github.com/Arcan17/ml-price-tracker.git
-cd ml-price-tracker
-
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-# Edit .env and set TELEGRAM_BOT_TOKEN=your_token_here
-
-# Start the bot
-python main.py
-```
-
-### Getting a Telegram Bot Token
-
-1. Open Telegram and search for **@BotFather**
-2. Send `/newbot` and follow the instructions
-3. Copy the token and paste it in your `.env` file
-
----
-
-## Running Tests
-
-Tests use **respx** to mock all MercadoLibre API calls — no real HTTP requests, no token needed.
-
-```bash
-pytest tests/ -v
-```
-
-Expected output:
-
-```
-tests/test_mercadolibre.py::test_search_products_returns_results PASSED
-tests/test_mercadolibre.py::test_get_item_returns_item PASSED
-tests/test_mercadolibre.py::test_get_item_returns_none_on_404 PASSED
-...
-tests/test_alerts.py::test_alert_triggered_when_price_drops PASSED
-tests/test_alerts.py::test_alert_not_triggered_when_price_above PASSED
-tests/test_alerts.py::test_alert_deactivated_when_product_removed PASSED
-...
-17 passed in X.XXs
-```
-
----
-
-## Project Structure
-
-```
-ml-price-tracker/
-├── bot/
-│   ├── handlers.py        # Telegram command handlers
-│   └── messages.py        # All bot text (Chilean Spanish)
-├── services/
-│   ├── mercadolibre.py    # MercadoLibre API client
-│   └── alerts.py          # Price checking & notification logic
-├── models/
-│   └── database.py        # SQLAlchemy models (User, Alert)
-├── api/
-│   └── main.py            # FastAPI health check endpoint
-├── tests/
-│   ├── conftest.py        # Shared test fixtures
-│   ├── test_mercadolibre.py
-│   └── test_alerts.py
-├── main.py                # Entry point
-├── Dockerfile
-└── docker-compose.yml
-```
+| Layer          | Technology                              |
+|----------------|-----------------------------------------|
+| Bot framework  | python-telegram-bot v20 (async)         |
+| HTTP client    | httpx (async)                           |
+| Scheduler      | APScheduler (via PTB JobQueue)          |
+| Database       | SQLite via SQLAlchemy 2.0               |
+| Health check   | FastAPI                                 |
+| Testing        | pytest + respx (HTTP mocks)             |
+| Containerization | Docker + Docker Compose               |
+| CI/CD          | GitHub Actions                          |
 
 ---
 
@@ -227,14 +165,14 @@ ml-price-tracker/
 ```
 User
 ├── id
-├── telegram_id  (unique)
+├── telegram_id   (unique)
 ├── username
 └── created_at
 
 Alert
 ├── id
-├── user_id      → User.id
-├── item_id      (e.g. MLC1234567890)
+├── user_id       → User.id
+├── item_id       (e.g. MLC1234567890)
 ├── item_name
 ├── item_url
 ├── target_price
@@ -246,23 +184,149 @@ Alert
 
 ---
 
+## Quickstart
+
+### Docker (recommended)
+
+```bash
+git clone https://github.com/Arcan17/ml-price-tracker.git
+cd ml-price-tracker
+cp .env.example .env
+# Edit .env — set TELEGRAM_BOT_TOKEN
+docker-compose up --build
+```
+
+Health check: `http://localhost:8080/health`
+
+### Local
+
+```bash
+git clone https://github.com/Arcan17/ml-price-tracker.git
+cd ml-price-tracker
+
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# Edit .env — set TELEGRAM_BOT_TOKEN
+
+python main.py
+```
+
+**Getting a Telegram bot token (free):**
+1. Open Telegram → search **@BotFather**
+2. Send `/newbot` and follow instructions
+3. Paste the token into `.env`
+
+---
+
 ## Environment Variables
 
-| Variable | Description | Default |
-|---|---|---|
-| `TELEGRAM_BOT_TOKEN` | Your bot token from @BotFather | — |
-| `DATABASE_URL` | SQLAlchemy connection string | `sqlite:///./data/bot.db` |
+| Variable             | Description                          | Default                       |
+|----------------------|--------------------------------------|-------------------------------|
+| `TELEGRAM_BOT_TOKEN` | Token from @BotFather                | *(required)*                  |
+| `DATABASE_URL`       | SQLAlchemy connection string         | `sqlite:///./data/bot.db`     |
+| `CHECK_INTERVAL`     | Price check interval in seconds      | `1800` (30 min)               |
+| `LOG_LEVEL`          | Logging verbosity                    | `INFO`                        |
+
+---
+
+## Running Tests
+
+All HTTP calls to MercadoLibre are mocked with **respx** — no token or internet connection needed.
+
+```bash
+pytest tests/ -v
+```
+
+```
+tests/test_mercadolibre.py    9 passed   ← API client, search, price fetch
+tests/test_alerts.py          8 passed   ← alert trigger logic, deactivation
+──────────────────────────────────────────
+17 passed in 0.6s
+```
+
+---
+
+## Project Structure
+
+```
+ml-price-tracker/
+├── main.py                  # Entry point: bot + scheduler + health API
+├── bot/
+│   ├── handlers.py          # Telegram command handlers
+│   └── messages.py          # Bot text (Chilean Spanish)
+├── services/
+│   ├── mercadolibre.py      # httpx async client — MercadoLibre public API
+│   └── alerts.py            # Price check loop + notification logic
+├── models/
+│   └── database.py          # SQLAlchemy ORM — User, Alert tables
+├── api/
+│   └── main.py              # FastAPI health check (for Docker)
+├── tests/
+│   ├── conftest.py
+│   ├── test_mercadolibre.py
+│   └── test_alerts.py
+├── docs/screenshots/
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .env.example
+└── .github/workflows/ci.yml
+```
+
+---
+
+## Technical Decisions
+
+**Why python-telegram-bot v20 (async)?**
+Version 20 is fully async — handlers, schedulers, and HTTP calls all run on the same event loop. This makes it trivial to handle dozens of concurrent users without threading complexity.
+
+**Why MercadoLibre's public API instead of scraping?**
+The public product endpoint (`/items/{id}`) is stable, fast, and requires no authentication for read operations. Scraping would be fragile and require browser automation for JavaScript-rendered content. Using the official API means the bot stays reliable long-term.
+
+**Why SQLite?**
+The access pattern is one user → one alert → one price check. There's no concurrent write contention. SQLite is zero-config, persists across restarts, and is trivially portable. PostgreSQL would add operational overhead for no meaningful benefit at this scale.
+
+**Why APScheduler (via PTB JobQueue) instead of a cron job?**
+The scheduler lives inside the bot process, so alerts are user-specific (stored in DB with per-user data) and can be created/deleted at runtime. A cron job would require re-reading the full alert list every interval and couldn't handle per-user state cleanly.
+
+---
+
+## Known Limitations
+
+- **MercadoLibre Chile only** — the site code `MLC` is hardcoded; other countries (MLA, MLM) would require configuration
+- **No price history** — only current price is stored; can't show price trend over time
+- **30-minute granularity** — flash sales shorter than 30 minutes may be missed
+- **Single product per alert** — no "track the cheapest iPhone 15 across all listings" support
+- **No web dashboard** — all interaction is through Telegram commands only
 
 ---
 
 ## Roadmap
 
-- [ ] Support MercadoLibre Argentina and Mexico (MLA, MLM)
-- [ ] `/historial {id}` command to show price history chart
-- [ ] Web dashboard to manage alerts from browser
-- [ ] Deploy public instance (Railway + persistent DB)
+- [ ] Deploy public instance (Railway + persistent volume)
+- [ ] `/historial {id}` — price history chart for a tracked product
 - [ ] Price drop percentage alerts (e.g. "alert me when it drops 15%")
-- [ ] Multi-language support (English)
+- [ ] Support MercadoLibre Argentina (`MLA`) and Mexico (`MLM`)
+- [ ] Web dashboard for managing alerts from a browser
+- [ ] Weekly summary: most tracked products, biggest drops
+
+---
+
+## Use Cases
+
+The same architecture — **API client + scheduler + Telegram bot + database** — applies directly to:
+
+- **Flight price monitoring** (Skyscanner, Despegar)
+- **Real estate listing alerts** (Portal Inmobiliario, Yapo)
+- **Competitor price tracking** for e-commerce
+- **Stock or crypto price alerts**
+- **Job listing monitors** (LinkedIn, GetOnBoard)
+- **Inventory / stock alert bots**
+
+Any "check a value every N minutes and notify when a condition is met" use case maps directly to this template.
 
 ---
 
